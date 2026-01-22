@@ -1,0 +1,30 @@
+{
+  "name": "wowok",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ts-node test/runAll.ts",
+    "sender": "ts-node src/sender.ts",
+    "receiver": "ts-node src/receiver.ts",
+    "timestamp": "ts-node src/timestampCiphertext.ts",
+    "validator": "ts-node src/validatorAgent.ts",
+    "web": "pnpm dlx http-server web -p 3001"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.27.0",
+  "dependencies": {
+    "eventsource": "^2.0.2",
+    "libsignal-protocol-typescript": "^0.0.18",
+    "opentimestamps": "^0.4.9"
+  },
+  "devDependencies": {
+    "@types/eventsource": "^1.1.12",
+    "@types/node": "^25.0.3",
+    "@types/opentimestamps": "^0.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

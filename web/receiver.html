@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Receiver Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Fira+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #0b0f14;
+        --bg-2: #111922;
+        --bg-3: #1c2a21;
+        --accent: #f5b042;
+        --accent-2: #5ee38c;
+        --text: #f1f3f4;
+        --muted: #9aa3ad;
+        --panel: rgba(12, 16, 20, 0.8);
+        --border: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Outfit", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(900px 600px at -10% 10%, rgba(94, 227, 140, 0.2), transparent 60%),
+          radial-gradient(900px 600px at 110% 0%, rgba(245, 176, 66, 0.2), transparent 60%),
+          linear-gradient(120deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
+        min-height: 100vh;
+        padding: 48px 24px 80px;
+      }
+
+      .wrap {
+        width: min(1100px, 100%);
+        margin: 0 auto;
+        display: grid;
+        gap: 24px;
+      }
+
+      header {
+        display: grid;
+        gap: 8px;
+        animation: slide 0.7s ease-out both;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 2.7rem);
+      }
+
+      .badge {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.85rem;
+        width: fit-content;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 24px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        animation: slide 0.8s ease-out both;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 14px;
+        min-width: 0;
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      input {
+        font: 400 0.95rem "Fira Mono", monospace;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: rgba(6, 9, 12, 0.75);
+        color: var(--text);
+        outline: none;
+        width: 100%;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input:focus {
+        border-color: rgba(94, 227, 140, 0.6);
+        box-shadow: 0 0 0 3px rgba(94, 227, 140, 0.18);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      button {
+        border: none;
+        padding: 12px 18px;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(140deg, var(--accent-2), #9bf7c2);
+        color: #0b0f12;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 12px 30px rgba(94, 227, 140, 0.3);
+      }
+
+      button.secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        box-shadow: none;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      .log {
+        font: 400 0.9rem "Fira Mono", monospace;
+        color: var(--muted);
+        background: rgba(4, 6, 8, 0.6);
+        border-radius: 12px;
+        padding: 16px;
+        min-height: 240px;
+        white-space: pre-wrap;
+      }
+
+      .pill {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .usage {
+        display: grid;
+        gap: 12px;
+      }
+
+      .steps {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .steps li {
+        margin-bottom: 6px;
+      }
+
+      @keyframes slide {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <span class="badge">Receiver UI - expected port 3001</span>
+        <h1>Receiver Console</h1>
+        <p class="pill">Pull and decrypt messages via the local receiver agent.</p>
+      </header>
+
+      <div class="grid">
+        <section class="panel">
+          <div class="field">
+            <label for="agentUrl">Receiver Agent URL</label>
+            <input id="agentUrl" value="http://localhost:3102" />
+          </div>
+          <div class="field">
+            <label for="serverUrl">Server URL</label>
+            <input id="serverUrl" value="http://localhost:3000" />
+          </div>
+          <div class="field">
+            <label for="receiverId">Receiver user_id</label>
+            <input id="receiverId" value="bob" />
+          </div>
+
+          <div class="actions">
+            <button id="pullBtn">Pull Decrypted</button>
+            <button id="startBtn" class="secondary">Start Auto Pull</button>
+            <button id="stopBtn" class="secondary">Stop Auto Pull</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Activity</h2>
+          <pre id="log" class="log">Idle.</pre>
+        </section>
+      </div>
+
+      <section class="panel usage">
+        <h2>Usage</h2>
+        <ol class="steps">
+          <li>Run <code>pnpm receiver -- --serve</code> to start the receiver agent.</li>
+          <li>Serve this file from <code>http://localhost:3001</code>.</li>
+          <li>Click <code>Pull Decrypted</code> to fetch and decrypt messages.</li>
+        </ol>
+      </section>
+    </main>
+
+    <script>
+      const logEl = document.getElementById("log");
+      const pullBtn = document.getElementById("pullBtn");
+      const startBtn = document.getElementById("startBtn");
+      const stopBtn = document.getElementById("stopBtn");
+      let timer = null;
+      let pulling = false;
+
+      function log(message) {
+        const ts = new Date().toLocaleTimeString();
+        logEl.textContent = `[${ts}] ${message}\n` + logEl.textContent;
+      }
+
+      function getConfig() {
+        return {
+          agentUrl: document.getElementById("agentUrl").value.trim(),
+          serverUrl: document.getElementById("serverUrl").value.trim(),
+          user: document.getElementById("receiverId").value.trim(),
+        };
+      }
+
+      async function pullMessages() {
+        if (pulling) return;
+        pulling = true;
+        const { agentUrl, serverUrl, user } = getConfig();
+        try {
+          const res = await fetch(`${agentUrl}/messages/pull`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              serverUrl,
+              userId: user,
+            }),
+          });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          const data = await res.json();
+          const messages = data.messages || [];
+          if (!messages.length) {
+            log("No new messages.");
+            return;
+          }
+          messages.forEach((msg) => {
+            log(`Message ${msg.id || "n/a"} from ${msg.from} (type ${msg.msg_type || "?"})`);
+            log(`plaintext: ${msg.plaintext}`);
+          });
+        } catch (err) {
+          log(`Pull error: ${err.message}`);
+        } finally {
+          pulling = false;
+        }
+      }
+
+      async function startStream() {
+        if (timer) {
+          log("Auto pull already running.");
+          return;
+        }
+        log("Auto pull started.");
+        timer = setInterval(pullMessages, 3000);
+      }
+
+      function stopStream() {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+          log("Auto pull stopped.");
+        }
+      }
+
+      pullBtn.addEventListener("click", pullMessages);
+      startBtn.addEventListener("click", startStream);
+      stopBtn.addEventListener("click", stopStream);
+    </script>
+  </body>
+</html>

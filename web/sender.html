@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sender Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #0b1b1f;
+        --bg-2: #132b2f;
+        --bg-3: #0f3c33;
+        --accent: #ff8a3d;
+        --accent-2: #22d3a7;
+        --text: #f7f3ee;
+        --muted: #b8b2aa;
+        --panel: rgba(16, 32, 34, 0.72);
+        --border: rgba(255, 255, 255, 0.08);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(1200px 600px at 10% -10%, rgba(255, 138, 61, 0.25), transparent 60%),
+          radial-gradient(900px 500px at 110% 10%, rgba(34, 211, 167, 0.22), transparent 60%),
+          linear-gradient(120deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3));
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 48px 24px 80px;
+      }
+
+      .wrap {
+        width: min(1100px, 100%);
+        display: grid;
+        gap: 28px;
+      }
+
+      header {
+        display: grid;
+        gap: 8px;
+        animation: rise 0.8s ease-out both;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 2.8rem);
+        letter-spacing: 0.02em;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 800px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.85rem;
+        width: fit-content;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 24px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+        animation: rise 0.9s ease-out both;
+      }
+
+      .panel h2 {
+        margin: 0 0 16px;
+        font-size: 1.2rem;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 16px;
+        min-width: 0;
+      }
+
+      label {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      input,
+      textarea,
+      select {
+        font: 400 0.95rem "IBM Plex Mono", monospace;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: rgba(7, 12, 14, 0.72);
+        color: var(--text);
+        outline: none;
+        width: 100%;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: rgba(255, 138, 61, 0.6);
+        box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.2);
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+
+      .row {
+        display: grid;
+        gap: 12px;
+      }
+
+      .row.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .row.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      button {
+        appearance: none;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        color: #0b0c0c;
+        background: linear-gradient(135deg, var(--accent), #ffb06b);
+        box-shadow: 0 10px 30px rgba(255, 138, 61, 0.35);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button.secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        box-shadow: none;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      .status {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.9rem;
+        color: var(--muted);
+        white-space: pre-wrap;
+      }
+
+      .note {
+        border-left: 3px solid var(--accent-2);
+        padding-left: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .usage {
+        display: grid;
+        gap: 12px;
+      }
+
+      .steps {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .steps li {
+        margin-bottom: 6px;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .row.two,
+        .row.three {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 1100px) {
+        .row.three {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <span class="badge">Sender UI - expected port 3001</span>
+        <h1>Sender Console</h1>
+        <p>Send plaintext through the local sender agent, which encrypts and posts to the relay.</p>
+      </header>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Payload</h2>
+          <form id="sendForm">
+            <div class="row two">
+              <div class="field">
+                <label for="agentUrl">Sender Agent URL</label>
+                <input id="agentUrl" value="http://localhost:3101" required />
+              </div>
+              <div class="field">
+                <label for="serverUrl">Server URL</label>
+                <input id="serverUrl" value="http://localhost:3000" required />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div class="field">
+                <label for="fromUser">From (user_id)</label>
+                <input id="fromUser" value="alice" required />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div class="field">
+                <label for="toUser">To (user_id)</label>
+                <input id="toUser" value="bob" required />
+              </div>
+              <div class="field">
+                <label for="messageId">Message ID</label>
+                <input id="messageId" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ttlSeconds">ttl_seconds (optional)</label>
+              <input id="ttlSeconds" value="2592000" />
+            </div>
+
+            <div class="field">
+              <label for="plaintext">Plaintext</label>
+              <textarea id="plaintext" required>This is a test message.</textarea>
+            </div>
+
+            <div class="actions">
+              <button type="submit">Send Message</button>
+              <button class="secondary" type="button" id="fillId">Generate ID</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>Status</h2>
+          <div class="note">
+            This page calls the local sender agent at <code>/send</code>, which encrypts with
+            libsignal and posts to the relay.
+          </div>
+          <pre id="status" class="status">Idle.</pre>
+        </section>
+      </div>
+
+      <section class="panel usage">
+        <h2>Usage</h2>
+        <ol class="steps">
+          <li>Run <code>pnpm sender -- --serve</code> to start the local sender agent.</li>
+          <li>Serve this file from <code>http://localhost:3001</code>.</li>
+          <li>Set <code>Server URL</code> to match the relay.</li>
+          <li>Type plaintext, click <code>Send Message</code>, and check the status panel.</li>
+        </ol>
+      </section>
+    </main>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const form = document.getElementById("sendForm");
+      const messageId = document.getElementById("messageId");
+
+      function setStatus(text) {
+        statusEl.textContent = text;
+      }
+
+      function generateId() {
+        if (crypto && crypto.randomUUID) return crypto.randomUUID();
+        return `msg-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+      }
+
+      document.getElementById("fillId").addEventListener("click", () => {
+        messageId.value = generateId();
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setStatus("Sending...");
+
+        const ttlRaw = document.getElementById("ttlSeconds").value.trim();
+        const payload = {
+          messageId: messageId.value || generateId(),
+          fromUser: document.getElementById("fromUser").value.trim(),
+          toUser: document.getElementById("toUser").value.trim(),
+          plaintext: document.getElementById("plaintext").value.trim(),
+          ttlSeconds: ttlRaw ? Number(ttlRaw) : undefined,
+        };
+
+        Object.keys(payload).forEach((key) => {
+          if (payload[key] === "" || payload[key] === undefined) {
+            delete payload[key];
+          }
+        });
+
+        try {
+          const agentUrl = document.getElementById("agentUrl").value.trim();
+          const serverUrl = document.getElementById("serverUrl").value.trim();
+          const res = await fetch(`${agentUrl}/send`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...payload,
+              serverUrl,
+            }),
+          });
+
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+          }
+          const data = await res.json();
+          setStatus(`Accepted.\nMessage ID: ${data.messageId || payload.messageId}\nmsg_type: ${data.msgType}`);
+        } catch (err) {
+          setStatus(`Error: ${err.message}`);
+        }
+      });
+    </script>
+  </body>
+</html>

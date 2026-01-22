@@ -1,0 +1,30 @@
+# Node / pnpm
+node_modules/
+.pnpm-store/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# TypeScript build outputs
+dist/
+
+# Local env
+.env
+.env.*
+*.local
+
+# Rust
+server/target/
+server/.cargo/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Generated timestamp receipts
+*.ots
+*.ots.json

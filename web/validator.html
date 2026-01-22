@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Validator Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #0a0c1b;
+        --bg-2: #12162a;
+        --bg-3: #1f1b2a;
+        --accent: #ff6b4a;
+        --accent-2: #4aa8ff;
+        --text: #f5f6fb;
+        --muted: #a6adba;
+        --panel: rgba(14, 18, 32, 0.82);
+        --border: rgba(255, 255, 255, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Barlow Condensed", sans-serif;
+        color: var(--text);
+        min-height: 100vh;
+        background:
+          radial-gradient(800px 500px at 0% 0%, rgba(74, 168, 255, 0.2), transparent 55%),
+          radial-gradient(700px 400px at 100% 10%, rgba(255, 107, 74, 0.18), transparent 60%),
+          linear-gradient(130deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3));
+        padding: 48px 24px 80px;
+      }
+
+      .wrap {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        display: grid;
+        gap: 24px;
+      }
+
+      header {
+        display: grid;
+        gap: 6px;
+        animation: pop 0.7s ease-out both;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 3.2vw, 2.9rem);
+      }
+
+      .badge {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.85rem;
+        width: fit-content;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(8px);
+        animation: pop 0.8s ease-out both;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 14px;
+        min-width: 0;
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      textarea,
+      input {
+        font: 400 0.95rem "JetBrains Mono", monospace;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: rgba(6, 8, 16, 0.78);
+        color: var(--text);
+        outline: none;
+        width: 100%;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      textarea:focus,
+      input:focus {
+        border-color: rgba(74, 168, 255, 0.6);
+        box-shadow: 0 0 0 3px rgba(74, 168, 255, 0.2);
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: none;
+        padding: 12px 18px;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(140deg, var(--accent), #ff9b6a);
+        color: #111;
+        box-shadow: 0 12px 30px rgba(255, 107, 74, 0.32);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button.secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        box-shadow: none;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      .result {
+        font: 400 0.9rem "JetBrains Mono", monospace;
+        color: var(--muted);
+        background: rgba(4, 6, 12, 0.6);
+        border-radius: 12px;
+        padding: 14px;
+        white-space: pre-wrap;
+      }
+
+      .usage {
+        display: grid;
+        gap: 12px;
+      }
+
+      .steps {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .steps li {
+        margin-bottom: 6px;
+      }
+
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <span class="badge">Validator UI - expected port 3001</span>
+        <h1>Validator Console</h1>
+        <p>Compute SHA-256 hashes and compare with expected values.</p>
+      </header>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Inputs</h2>
+          <div class="field">
+            <label for="plaintext">Plaintext (optional)</label>
+            <textarea id="plaintext" placeholder="plaintext"></textarea>
+          </div>
+          <div class="field">
+            <label for="ciphertextB64">Ciphertext (base64)</label>
+            <textarea id="ciphertextB64" placeholder="base64 ciphertext"></textarea>
+          </div>
+          <div class="field">
+            <label for="saltHex">Salt (hex)</label>
+            <input id="saltHex" placeholder="hex salt for salted hash" />
+          </div>
+
+          <div class="actions">
+            <button id="computeBtn">Compute Hashes</button>
+            <button id="clearBtn" class="secondary">Clear</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Expected (optional)</h2>
+          <div class="field">
+            <label for="expectedPlain">plaintextHashHex</label>
+            <input id="expectedPlain" placeholder="expected plaintext hash" />
+          </div>
+          <div class="field">
+            <label for="expectedCipher">ciphertextHashHex</label>
+            <input id="expectedCipher" placeholder="expected ciphertext hash" />
+          </div>
+          <div class="field">
+            <label for="expectedSalted">saltedCiphertextHashHex</label>
+            <input id="expectedSalted" placeholder="expected salted hash" />
+          </div>
+
+          <div class="actions">
+            <button id="compareBtn">Compare</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2>Results</h2>
+        <pre id="results" class="result">Idle.</pre>
+      </section>
+
+      <section class="panel usage">
+        <h2>Usage</h2>
+        <ol class="steps">
+          <li>Serve this file from <code>http://localhost:3001</code>.</li>
+          <li>Paste plaintext and/or base64 ciphertext.</li>
+          <li>Provide <code>saltHex</code> to compute a salted hash.</li>
+          <li>Use Compare to verify expected hash values.</li>
+        </ol>
+      </section>
+    </main>
+
+    <script>
+      const resultsEl = document.getElementById("results");
+
+      function setResults(text) {
+        resultsEl.textContent = text;
+      }
+
+      function hexToBytes(hex) {
+        const clean = hex.trim();
+        if (clean.length % 2 !== 0) throw new Error("hex length must be even");
+        const out = new Uint8Array(clean.length / 2);
+        for (let i = 0; i < out.length; i += 1) {
+          out[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+        }
+        return out;
+      }
+
+      function bytesToHex(buffer) {
+        return Array.from(new Uint8Array(buffer))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      function base64ToBytes(b64) {
+        const bin = atob(b64);
+        const out = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i += 1) {
+          out[i] = bin.charCodeAt(i);
+        }
+        return out;
+      }
+
+      async function sha256(buffer) {
+        const hash = await crypto.subtle.digest("SHA-256", buffer);
+        return bytesToHex(hash);
+      }
+
+      async function compute() {
+        const plaintext = document.getElementById("plaintext").value;
+        const ciphertextB64 = document.getElementById("ciphertextB64").value.trim();
+        const saltHex = document.getElementById("saltHex").value.trim();
+
+        const lines = [];
+        if (plaintext) {
+          const bytes = new TextEncoder().encode(plaintext);
+          lines.push(`plaintextHashHex: ${await sha256(bytes)}`);
+        }
+
+        if (ciphertextB64) {
+          const cipherBytes = base64ToBytes(ciphertextB64);
+          lines.push(`ciphertextHashHex: ${await sha256(cipherBytes)}`);
+        }
+
+        if (ciphertextB64 && saltHex) {
+          const cipherBytes = base64ToBytes(ciphertextB64);
+          const saltBytes = hexToBytes(saltHex);
+          const merged = new Uint8Array(saltBytes.length + cipherBytes.length);
+          merged.set(saltBytes, 0);
+          merged.set(cipherBytes, saltBytes.length);
+          lines.push(`saltedCiphertextHashHex: ${await sha256(merged)}`);
+        }
+
+        if (!lines.length) {
+          setResults("Provide plaintext or ciphertext to compute hashes.");
+          return;
+        }
+        setResults(lines.join("\n"));
+      }
+
+      function compare() {
+        const expectedPlain = document.getElementById("expectedPlain").value.trim();
+        const expectedCipher = document.getElementById("expectedCipher").value.trim();
+        const expectedSalted = document.getElementById("expectedSalted").value.trim();
+        const output = resultsEl.textContent;
+
+        const lines = [];
+        if (expectedPlain) {
+          lines.push(`plaintext: ${output.includes(expectedPlain) ? "match" : "mismatch"}`);
+        }
+        if (expectedCipher) {
+          lines.push(`ciphertext: ${output.includes(expectedCipher) ? "match" : "mismatch"}`);
+        }
+        if (expectedSalted) {
+          lines.push(`salted: ${output.includes(expectedSalted) ? "match" : "mismatch"}`);
+        }
+        if (!lines.length) {
+          lines.push("No expected values to compare.");
+        }
+        setResults(`${output}\n\nCompare:\n${lines.join("\n")}`);
+      }
+
+      document.getElementById("computeBtn").addEventListener("click", compute);
+      document.getElementById("compareBtn").addEventListener("click", compare);
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        document.getElementById("plaintext").value = "";
+        document.getElementById("ciphertextB64").value = "";
+        document.getElementById("saltHex").value = "";
+        document.getElementById("expectedPlain").value = "";
+        document.getElementById("expectedCipher").value = "";
+        document.getElementById("expectedSalted").value = "";
+        setResults("Idle.");
+      });
+    </script>
+  </body>
+</html>
